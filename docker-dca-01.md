@@ -97,8 +97,7 @@ Ambos os comandos acima são equivalentes.
 
 ##### Obtendo informação com mais granularidade:
 
-Para listar containers, imagens, redes e volumes no docker, utiliza-
-mos o comando docker <comando> ls:
+Para listar containers, imagens, redes e volumes no docker, utilizamos o comando docker <comando> ls:
 
 - docker container ls - lista os containers em execução (adicionando parâmtro -a também mostra os que estão parados)
 - docker image ls - lista as imagens
@@ -149,7 +148,7 @@ Obs.: O container deve estar parado para ser possível a remoção. Caso queira 
 docker container rm -debian1
 ~~~
 
-Obs.: Para sair do container sem <para-lo> utilize a sequencia de teclas: **<CTRL> + <P> + <Q>**, chamada de READ ESCAPE SEQUENCE.
+Obs.: Para sair do container sem <para-lo> utilize a sequencia de teclas: ** < CTRL > + < P > + < Q > **, chamada de READ ESCAPE SEQUENCE.
 
 ##### Verificando logs
 
