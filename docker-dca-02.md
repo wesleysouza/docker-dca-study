@@ -152,3 +152,127 @@ Definições:
 - **ENTRYPOINT**: Possibilita configurar o container para rodar como um executável, o comando docker run <image> inicializará o container em seu entrypoint somado ao CMD se existente.
 
 ### Criando Dockerfiles
+
+#### Primeiro Dockerfile:
+
+Escreva o conteúdo abaixo no arquivo:
+
+~~~Dockerfile
+FROM alpine
+ENTRYPOINT ["echo"]
+CMD ["--help"]
+~~~
+
+Para criar essa imagem utilize o comando **docker image build**:
+
+~~~shell
+docker image build -t echo-container .
+docker image ls
+~~~
+
+A opção **-t** significa TAG, após o nome da **imagem:tag** informamos qual o diretório que o Dockerfile se encontra. Para utilizer o diretório atual (PWD) use o ponto **( . )**.
+
+Execute o container com a imagem criada:
+
+~~~shell
+docker container run --rm -it echo-container
+~~~
+
+Utilizando a opção **-rm** informamos que o container será apagado após cumprir seu papel.
+
+Executando e passando um parâmetro:
+
+~~~shel
+docker container run --rm -it echo-container Container DevOps
+~~~
+
+Ao passar um parâmetro após o nome da imagem estamos alterando o CMD do container, anteriormente echo –help para echo Container DevOps.
+
+#### Dockerfile de um servidor WEB
+
+~~~Dockerfile
+FROM debian
+RUN apt-get update && apt-get install wget git apache2 -y
+EXPOSE 80
+CMD ["apachectl", "-D", "FOREGROUND"]
+~~~
+
+Criando a imagem:
+
+~~~shell
+docker image build -t webserver .
+docker image ls
+~~~
+
+#### Enviando a imagem para o Dockerhub
+
+Para enviar a imagem para o Dockerhub é necessário executar 3 passos:
+- docker login
+- docker image tag
+- docker push
+
+##### Login no Dockerhub
+
+Faça o login com o comando:
+~~~shell
+docker login -u <usuario_dockerhub>
+~~~
+
+##### Crie a tag da imagem
+
+Precisaos que a tag da imagem siga o padrão: **usuario/imagem:versao**.
+
+~~~shell
+docker image tag echo-container <usuario_dockerhub>/echo-container:latest
+docker image tag webserver <usuario_dockerhub>/webserver
+~~~
+
+Obs.: Caso não seja informada uma versão, o docker entende que a versão
+trata-se da latest.
+
+##### Enviando para o Dockerhub
+
+~~~shell
+docker image push <usuario_dockerhub>/echo-container
+docker image push <usuario_dockerhub>/webserver
+~~~
+
+Ao finalizar o procedimento, faça logout em sua conta do dockerhub:
+
+~~~shell
+docker logout
+~~~
+
+### Melhores práticas com o Dockerfile
+
+Primeiras recomendações:
+- Os containers devem ser tão **efêmeros** quanto possível, isso quer dizer que o con-
+tainer deve poder ser parado e/ou destruido a qualquer momento, e reconstruido ou substituido com o mínimo de configuração ou atualização.
+- Os containers devem subir de maneira stateless (sem estado).
+
+#### Entendendo o contexto de Build
+
+O **build context** é o diretório onde o comando **docker image build** é executado Nesse diretório só pode conter o conteúdo necessário para a criação da imagem pois, esse contaúdo será enviado para o docker deamon.
+
+##### Excluíndo arquivos do build
+
+Para excluir os arquivos que não naõ importantes para o build, podemos criar um arquivo **.dockerignore**. Esse arquivo contêm os padrões de exclusão e é semelhante aos do **.gitignore**, possibilitando que ignoremos arquivos no build sem modificar o nosso repositório.
+
+Criando arquivo .dockerignore:
+
+~~~shell
+vim context/.dockerignore
+~~~
+
+Conteúdo do arquivo:
+
+~~~shell
+# Comentario: Ignorando arquivos do diretorio log
+log
+~~~
+
+Criando a imagem:
+
+~~~shell
+docker image build --no-cache -t exemplo:v4 -f image/Dockerfile context
+~~~
